@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Finance — LIFEOS{% endblock %}
+{% block content %}
+<div class="section-header"><h2>Finance</h2></div>
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Balance</div><div class="stat-value">{{ '%.0f'|format(balance) }} {{ currency }}</div></div>
+    <div class="stat-card"><div class="stat-label">Total income</div><div class="stat-value" style="color:var(--success)">{{ '%.0f'|format(total_income) }}</div></div>
+    <div class="stat-card"><div class="stat-label">Total expenses</div><div class="stat-value" style="color:var(--danger)">{{ '%.0f'|format(total_expense) }}</div></div>
+</div>
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Today income</div><div class="stat-value">{{ '%.0f'|format(income_today) }}</div></div>
+    <div class="stat-card"><div class="stat-label">Today expense</div><div class="stat-value">{{ '%.0f'|format(expense_today) }}</div></div>
+    <div class="stat-card"><div class="stat-label">This month income</div><div class="stat-value">{{ '%.0f'|format(income_month) }}</div></div>
+    <div class="stat-card"><div class="stat-label">This month expense</div><div class="stat-value">{{ '%.0f'|format(expense_month) }}</div></div>
+</div>
+<div class="card">
+    <div class="card-title">Add transaction</div>
+    <form method="post" action="/finance/create" style="display:grid;gap:0.75rem">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem">
+            <input type="number" name="amount" step="0.01" min="0.01" placeholder="Amount" required>
+            <select name="type" id="txType" onchange="updateCats()">
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+            </select>
+            <select name="category" id="txCat">
+                {% for c in expense_cats %}<option>{{ c }}</option>{% endfor %}
+            </select>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem">
+            <input type="date" name="transaction_date" value="{{ today }}">
+            <select name="currency">
+                <option value="TJS">TJS</option><option value="USD">USD</option>
+                <option value="EUR">EUR</option><option value="RUB">RUB</option>
+            </select>
+        </div>
+        <input type="text" name="description" placeholder="Description (optional)">
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+</div>
+{% if transactions %}
+<ul class="item-list card">
+{% for t in transactions %}
+<li class="item-row">
+    <div style="flex:1">
+        <div class="item-title">{{ t.category }}{% if t.description %} — {{ t.description }}{% endif %}</div>
+        <div class="item-meta">{{ t.transaction_date }} · {{ t.type }}</div>
+    </div>
+    <span style="font-weight:600;color:{% if t.type=='income' %}var(--success){% else %}var(--danger){% endif %}">
+        {% if t.type=='income' %}+{% else %}-{% endif %}{{ '%.2f'|format(t.amount) }} {{ t.currency }}
+    </span>
+    <form method="post" action="/finance/{{ t.id }}/delete" onsubmit="return confirm('Delete?')">
+        <button type="submit" class="btn btn-ghost" style="color:var(--danger)">✕</button>
+    </form>
+</li>
+{% endfor %}
+</ul>
+{% endif %}
+<script>
+const expenseCats = {{ expense_cats|tojson }};
+const incomeCats = {{ income_cats|tojson }};
+function updateCats() {
+    const type = document.getElementById('txType').value;
+    const sel = document.getElementById('txCat');
+    sel.innerHTML = '';
+    (type === 'income' ? incomeCats : expenseCats).forEach(c => {
+        const o = document.createElement('option'); o.textContent = c; sel.appendChild(o);
+    });
+}
+</script>
+{% endblock %}

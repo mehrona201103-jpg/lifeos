@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Tasks — LIFEOS{% endblock %}
+{% block content %}
+<div class="section-header">
+    <h2>Tasks</h2>
+    <div style="display:flex;gap:0.5rem">
+        <a href="/tasks?filter=all" class="btn btn-ghost {% if filter=='all' %}btn-secondary{% endif %}">All</a>
+        <a href="/tasks?filter=today" class="btn btn-ghost {% if filter=='today' %}btn-secondary{% endif %}">Today</a>
+        <a href="/tasks?filter=upcoming" class="btn btn-ghost {% if filter=='upcoming' %}btn-secondary{% endif %}">Upcoming</a>
+        <a href="/tasks?filter=completed" class="btn btn-ghost {% if filter=='completed' %}btn-secondary{% endif %}">Done</a>
+    </div>
+</div>
+<div class="card">
+    <form method="post" action="/tasks/create" style="display:grid;gap:0.75rem">
+        <input type="text" name="title" placeholder="Task title" required>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem">
+            <select name="priority"><option value="low">Low</option><option value="medium" selected>Medium</option><option value="high">High</option></select>
+            <select name="category"><option>Study</option><option>Work</option><option>Personal</option><option>Shopping</option><option>Other</option></select>
+            <input type="date" name="due_date">
+        </div>
+        <button type="submit" class="btn btn-primary">Add task</button>
+    </form>
+</div>
+{% if tasks %}
+<ul class="item-list card">
+{% for t in tasks %}
+<li class="item-row">
+    <div class="item-check {% if t.status=='completed' %}done{% endif %}" onclick="toggleTask({{ t.id }})">{% if t.status=='completed' %}✓{% endif %}</div>
+    <div style="flex:1">
+        <div class="item-title {% if t.status=='completed' %}done{% endif %}">{{ t.title }}</div>
+        <div class="item-meta">{% if t.due_date %}{{ t.due_date }}{% endif %} · {{ t.category }}</div>
+    </div>
+    <span class="badge badge-{{ t.priority }}">{{ t.priority }}</span>
+    <form method="post" action="/tasks/{{ t.id }}/delete" onsubmit="return confirm('Delete?')">
+        <button type="submit" class="btn btn-ghost" style="color:var(--danger)">✕</button>
+    </form>
+</li>
+{% endfor %}
+</ul>
+{% else %}
+<div class="empty-state card"><p>No tasks found</p></div>
+{% endif %}
+{% endblock %}

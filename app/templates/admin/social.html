@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Social Links — Admin{% endblock %}
+{% block content %}
+<div class="section-header"><h2>Social Links</h2><a href="/admin" class="btn btn-ghost">← Back</a></div>
+<div class="card" style="max-width:500px">
+<form method="post" action="/admin/social" style="display:grid;gap:1rem">
+    <div class="form-group">
+        <label>Instagram URL</label>
+        <input type="url" name="instagram_url" value="{{ links.instagram.url if links.instagram and links.instagram.url else '' }}" placeholder="https://instagram.com/...">
+        <label style="margin-top:0.5rem;display:flex;align-items:center;gap:0.5rem">
+            <input type="checkbox" name="instagram_enabled" value="1" {% if links.instagram and links.instagram.is_enabled %}checked{% endif %}> Enabled
+        </label>
+    </div>
+    <div class="form-group">
+        <label>TikTok URL</label>
+        <input type="url" name="tiktok_url" value="{{ links.tiktok.url if links.tiktok and links.tiktok.url else '' }}" placeholder="https://tiktok.com/@...">
+        <label style="margin-top:0.5rem;display:flex;align-items:center;gap:0.5rem">
+            <input type="checkbox" name="tiktok_enabled" value="1" {% if links.tiktok and links.tiktok.is_enabled %}checked{% endif %}> Enabled
+        </label>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>
+</div>
+{% endblock %}

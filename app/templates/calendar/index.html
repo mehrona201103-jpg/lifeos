@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Calendar — LIFEOS{% endblock %}
+{% block content %}
+<div class="section-header"><h2>Activity Calendar</h2></div>
+<div class="card">
+    <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px">
+    {% for a in activity %}
+        <div title="{{ a.date }}: {{ a.total }} activities" style="
+            aspect-ratio:1;border-radius:4px;
+            background: {% if a.total == 0 %}var(--bg-primary){% elif a.total == 1 %}rgba(124,92,252,0.3){% elif a.total == 2 %}rgba(124,92,252,0.55){% else %}rgba(124,92,252,0.85){% endif %};
+            border:1px solid var(--border);
+        "></div>
+    {% endfor %}
+    </div>
+    <p style="margin-top:1rem;font-size:0.8125rem;color:var(--text-muted)">Last 42 days · darker = more activity</p>
+</div>
+{% endblock %}

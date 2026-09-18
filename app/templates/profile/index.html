@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Profile — LIFEOS{% endblock %}
+{% block content %}
+<div class="section-header"><h2>Profile & Settings</h2></div>
+{% if message %}<div class="alert alert-success">{{ message }}</div>{% endif %}
+{% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+<div class="card">
+    <div class="card-title">Profile</div>
+    <form method="post" action="/profile" style="display:grid;gap:0.75rem;max-width:400px">
+        <div class="form-group"><label>Username</label><input type="text" value="{{ user.username }}" disabled></div>
+        <div class="form-group"><label>Email</label><input type="email" value="{{ user.email }}" disabled></div>
+        <div class="form-group"><label>Display name</label><input type="text" name="display_name" value="{{ user.display_name }}" required></div>
+        <div class="form-group"><label>Timezone</label>
+            <select name="timezone">
+                <option value="UTC" {% if user.timezone=='UTC' %}selected{% endif %}>UTC</option>
+                <option value="Asia/Dushanbe" {% if user.timezone=='Asia/Dushanbe' %}selected{% endif %}>Asia/Dushanbe</option>
+                <option value="Europe/Moscow" {% if user.timezone=='Europe/Moscow' %}selected{% endif %}>Europe/Moscow</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Currency</label>
+            <select name="currency">
+                {% for c in ['TJS','USD','EUR','RUB'] %}
+                <option value="{{ c }}" {% if user.currency==c %}selected{% endif %}>{{ c }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group"><label>Language</label>
+            <select name="language">
+                <option value="en" {% if user.language=='en' %}selected{% endif %}>English</option>
+                <option value="ru" {% if user.language=='ru' %}selected{% endif %}>Russian</option>
+                <option value="tg" {% if user.language=='tg' %}selected{% endif %}>Tajik</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Theme</label>
+            <select name="theme">
+                <option value="dark" {% if user.theme=='dark' %}selected{% endif %}>Dark</option>
+                <option value="light" {% if user.theme=='light' %}selected{% endif %}>Light</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Daily goal (habits)</label><input type="number" name="daily_goal" value="{{ user.daily_goal }}" min="1" max="50"></div>
+        <button type="submit" class="btn btn-primary">Save profile</button>
+    </form>
+</div>
+<div class="card">
+    <div class="card-title">Change password</div>
+    <form method="post" action="/profile/password" style="display:grid;gap:0.75rem;max-width:400px">
+        <div class="form-group"><label>Current password</label><input type="password" name="current_password" required></div>
+        <div class="form-group"><label>New password</label><input type="password" name="new_password" required minlength="8"></div>
+        <div class="form-group"><label>Confirm new password</label><input type="password" name="confirm_password" required></div>
+        <button type="submit" class="btn btn-secondary">Change password</button>
+    </form>
+</div>
+{% endblock %}

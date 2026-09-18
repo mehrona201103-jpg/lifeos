@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Habits — LIFEOS{% endblock %}
+{% block content %}
+<div class="section-header"><h2>Habits</h2></div>
+<div class="card">
+    <form method="post" action="/habits/create" class="auth-form" style="display:grid;gap:0.75rem;grid-template-columns:1fr 1fr auto">
+        <input type="text" name="title" placeholder="Habit name" required>
+        <select name="category">
+            <option>Health</option><option>Study</option><option>Work</option><option>Personal</option><option>Other</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+</div>
+{% if habits %}
+<ul class="item-list card">
+{% for h in habits %}
+<li class="item-row">
+    <div class="item-check {% if h.id in completed %}done{% endif %}" onclick="toggleHabit({{ h.id }})" style="border-color:{{ h.color }}">{% if h.id in completed %}✓{% endif %}</div>
+    <div style="flex:1">
+        <div class="item-title {% if h.id in completed %}done{% endif %}">{{ h.title }}</div>
+        <div class="item-meta">{{ h.category }} · streak {{ h.current_streak }} · best {{ h.best_streak }}</div>
+    </div>
+    <form method="post" action="/habits/{{ h.id }}/delete" onsubmit="return confirm('Delete?')">
+        <button type="submit" class="btn btn-ghost" style="color:var(--danger)">✕</button>
+    </form>
+</li>
+{% endfor %}
+</ul>
+{% else %}
+<div class="empty-state card"><p>No habits yet. Create your first one!</p></div>
+{% endif %}
+{% endblock %}

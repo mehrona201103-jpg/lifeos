@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Admin — LIFEOS{% endblock %}
+{% block content %}
+<div class="section-header">
+    <h2>Admin Dashboard</h2>
+    <div style="display:flex;gap:0.5rem">
+        <a href="/admin/users" class="btn btn-secondary">Users</a>
+        <a href="/admin/social" class="btn btn-secondary">Social Links</a>
+    </div>
+</div>
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Users</div><div class="stat-value">{{ users_count }}</div></div>
+    <div class="stat-card"><div class="stat-label">Active users</div><div class="stat-value">{{ active_users }}</div></div>
+    <div class="stat-card"><div class="stat-label">Tasks</div><div class="stat-value">{{ tasks_count }}</div></div>
+    <div class="stat-card"><div class="stat-label">Habits</div><div class="stat-value">{{ habits_count }}</div></div>
+    <div class="stat-card"><div class="stat-label">Goals</div><div class="stat-value">{{ goals_count }}</div></div>
+    <div class="stat-card"><div class="stat-label">Transactions</div><div class="stat-value">{{ txs_count }}</div></div>
+</div>
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Uptime (sec)</div><div class="stat-value">{{ uptime }}</div></div>
+    <div class="stat-card"><div class="stat-label">Version</div><div class="stat-value">{{ version }}</div></div>
+    <div class="stat-card"><div class="stat-label">Database</div><div class="stat-value" style="color:var(--success)">OK</div></div>
+</div>
+{% if logs %}
+<div class="card">
+    <div class="card-title">Recent admin actions</div>
+    <ul class="item-list">
+    {% for log in logs %}
+        <li class="item-row">
+            <div class="item-title">{{ log.action }}</div>
+            <span class="item-meta">{{ log.created_at }}</span>
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+{% endif %}
+{% endblock %}

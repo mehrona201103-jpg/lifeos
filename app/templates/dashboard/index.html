@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — LIFEOS{% endblock %}
+{% block content %}
+<div class="greeting">
+    <h1>{{ greeting }}</h1>
+    <p class="date">{{ today }}</p>
+</div>
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Current streak</div><div class="stat-value">{{ streak }} days</div></div>
+    <div class="stat-card"><div class="stat-label">Today's progress</div><div class="stat-value">{{ progress }}</div></div>
+    <div class="stat-card"><div class="stat-label">Active goals</div><div class="stat-value">{{ active_goals }}</div></div>
+    <div class="stat-card"><div class="stat-label">Balance</div><div class="stat-value">{{ '%.0f'|format(balance) }} {{ currency }}</div></div>
+</div>
+
+<div class="card">
+    <div class="card-title">Today's Tasks</div>
+    {% if today_tasks %}
+    <ul class="item-list">
+        {% for t in today_tasks %}
+        <li class="item-row">
+            <div class="item-check {% if t.status == 'completed' %}done{% endif %}" onclick="toggleTask({{ t.id }})">{% if t.status == 'completed' %}✓{% endif %}</div>
+            <div class="item-title {% if t.status == 'completed' %}done{% endif %}">{{ t.title }}</div>
+            <span class="badge badge-{{ t.priority }}">{{ t.priority }}</span>
+            {% if t.due_time %}<span class="item-meta">{{ t.due_time }}</span>{% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state"><p>No tasks for today</p><a href="/tasks" class="btn btn-secondary">Add task</a></div>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="card-title">Today's Habits</div>
+    {% if habits %}
+    <ul class="item-list">
+        {% for h in habits %}
+        <li class="item-row">
+            <div class="item-check {% if h.id in completed_habit_ids %}done{% endif %}" onclick="toggleHabit({{ h.id }})" style="border-color:{{ h.color }}">{% if h.id in completed_habit_ids %}✓{% endif %}</div>
+            <div class="item-title {% if h.id in completed_habit_ids %}done{% endif %}">{{ h.title }}</div>
+            <span class="item-meta">🔥 {{ h.current_streak }}</span>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state"><p>No habits yet</p><a href="/habits" class="btn btn-secondary">Create habit</a></div>
+    {% endif %}
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Tasks done today</div><div class="stat-value">{{ tasks_done }}</div></div>
+    <div class="stat-card"><div class="stat-label">Habits done today</div><div class="stat-value">{{ habits_done }}</div></div>
+    <div class="stat-card"><div class="stat-label">Income today</div><div class="stat-value">{{ '%.0f'|format(income_today) }}</div></div>
+    <div class="stat-card"><div class="stat-label">Expense today</div><div class="stat-value">{{ '%.0f'|format(expense_today) }}</div></div>
+</div>
+{% endblock %}

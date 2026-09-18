@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Goals — LIFEOS{% endblock %}
+{% block content %}
+<div class="section-header"><h2>Goals</h2></div>
+<div class="card">
+    <form method="post" action="/goals/create" style="display:grid;gap:0.75rem">
+        <input type="text" name="title" placeholder="Goal title" required>
+        <textarea name="description" placeholder="Description" rows="2"></textarea>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.5rem">
+            <input type="date" name="deadline" placeholder="Deadline">
+            <input type="number" name="progress" min="0" max="100" value="0" placeholder="Progress %">
+            <input type="color" name="color" value="#7c5cfc">
+        </div>
+        <button type="submit" class="btn btn-primary">Create goal</button>
+    </form>
+</div>
+{% for g in goals %}
+<div class="card">
+    <div style="display:flex;justify-content:space-between;align-items:start">
+        <div>
+            <strong>{{ g.title }}</strong>
+            {% if g.description %}<p style="color:var(--text-secondary);font-size:0.875rem;margin-top:0.25rem">{{ g.description }}</p>{% endif %}
+            <div class="item-meta" style="margin-top:0.5rem">
+                {{ g.status }} · {% if g.deadline %}deadline {{ g.deadline }}{% else %}no deadline{% endif %}
+            </div>
+        </div>
+        <form method="post" action="/goals/{{ g.id }}/delete" onsubmit="return confirm('Delete?')">
+            <button type="submit" class="btn btn-ghost" style="color:var(--danger)">✕</button>
+        </form>
+    </div>
+    <div style="margin-top:0.75rem">
+        <div style="display:flex;justify-content:space-between;font-size:0.8125rem;margin-bottom:0.25rem">
+            <span>Progress</span><span>{{ g.progress }}%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" style="width:{{ g.progress }}%;background:{{ g.color }}"></div></div>
+    </div>
+    <form method="post" action="/goals/{{ g.id }}/progress" style="display:flex;gap:0.5rem;margin-top:0.75rem">
+        <input type="range" name="progress" min="0" max="100" value="{{ g.progress }}" style="flex:1" oninput="this.nextElementSibling.textContent=this.value+'%'">
+        <span style="min-width:3rem;font-size:0.875rem">{{ g.progress }}%</span>
+        <button type="submit" class="btn btn-secondary">Save</button>
+    </form>
+</div>
+{% else %}
+<div class="empty-state card"><p>No goals yet</p></div>
+{% endfor %}
+{% endblock %}

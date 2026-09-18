@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Users — Admin{% endblock %}
+{% block content %}
+<div class="section-header"><h2>Users</h2><a href="/admin" class="btn btn-ghost">← Back</a></div>
+<div class="card" style="overflow-x:auto">
+<table style="width:100%;border-collapse:collapse;font-size:0.875rem">
+<thead>
+<tr style="text-align:left;border-bottom:1px solid var(--border)">
+    <th style="padding:0.5rem">ID</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th>Actions</th>
+</tr>
+</thead>
+<tbody>
+{% for u in users %}
+<tr style="border-bottom:1px solid var(--border)">
+    <td style="padding:0.5rem">{{ u.id }}</td>
+    <td>{{ u.username }}</td>
+    <td>{{ u.email }}</td>
+    <td>{{ u.role }}</td>
+    <td>{% if u.is_blocked %}Blocked{% elif u.is_active %}Active{% else %}Inactive{% endif %}</td>
+    <td>{{ u.created_at.strftime('%Y-%m-%d') if u.created_at else '—' }}</td>
+    <td style="display:flex;gap:0.25rem">
+        {% if u.role != 'admin' %}
+        <form method="post" action="/admin/users/{{ u.id }}/toggle-block">
+            <button class="btn btn-ghost" style="font-size:0.75rem">{% if u.is_blocked %}Unblock{% else %}Block{% endif %}</button>
+        </form>
+        <form method="post" action="/admin/users/{{ u.id }}/make-admin">
+            <button class="btn btn-ghost" style="font-size:0.75rem">Make admin</button>
+        </form>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endblock %}

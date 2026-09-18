@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Statistics — LIFEOS{% endblock %}
+{% block content %}
+<div class="section-header">
+    <h2>Statistics</h2>
+    <div style="display:flex;gap:0.5rem">
+        <a href="/statistics?period=7" class="btn btn-ghost {% if period==7 %}btn-secondary{% endif %}">7d</a>
+        <a href="/statistics?period=30" class="btn btn-ghost {% if period==30 %}btn-secondary{% endif %}">30d</a>
+        <a href="/statistics?period=90" class="btn btn-ghost {% if period==90 %}btn-secondary{% endif %}">90d</a>
+        <a href="/statistics?period=365" class="btn btn-ghost {% if period==365 %}btn-secondary{% endif %}">Year</a>
+    </div>
+</div>
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Tasks completed</div><div class="stat-value">{{ tasks_done }}</div></div>
+    <div class="stat-card"><div class="stat-label">Habits done</div><div class="stat-value">{{ habits_done }}</div></div>
+    <div class="stat-card"><div class="stat-label">Active goals</div><div class="stat-value">{{ active_goals }}</div></div>
+    <div class="stat-card"><div class="stat-label">Completed goals</div><div class="stat-value">{{ completed_goals }}</div></div>
+</div>
+<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Income (period)</div><div class="stat-value" style="color:var(--success)">{{ '%.0f'|format(total_income) }} {{ currency }}</div></div>
+    <div class="stat-card"><div class="stat-label">Expenses (period)</div><div class="stat-value" style="color:var(--danger)">{{ '%.0f'|format(total_expense) }} {{ currency }}</div></div>
+    <div class="stat-card"><div class="stat-label">Balance</div><div class="stat-value">{{ '%.0f'|format(balance) }} {{ currency }}</div></div>
+</div>
+<div class="card">
+    <div class="card-title">Habit completions</div>
+    <canvas id="habitChart" height="120"></canvas>
+</div>
+{% if expense_cats %}
+<div class="card">
+    <div class="card-title">Expenses by category</div>
+    <canvas id="expenseChart" height="120"></canvas>
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script>
+const daily = {{ daily_habits|tojson }};
+new Chart(document.getElementById('habitChart'), {
+    type: 'bar',
+    data: {
+        labels: daily.map(d => d.date.slice(5)),
+        datasets: [{ label: 'Completions', data: daily.map(d => d.count), backgroundColor: '#7c5cfc' }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+});
+{% if expense_cats %}
+const cats = {{ expense_cats|tojson }};
+new Chart(document.getElementById('expenseChart'), {
+    type: 'doughnut',
+    data: {
+        labels: cats.map(c => c.cat),
+        datasets: [{ data: cats.map(c => c.amount), backgroundColor: ['#7c5cfc','#22c55e','#f59e0b','#ef4444','#3b82f6','#ec4899','#8b5cf6'] }]
+    },
+    options: { plugins: { legend: { position: 'bottom' } } }
+});
+{% endif %}
+</script>
+{% endblock %}
